@@ -74,6 +74,8 @@ class DialogueRunner:
 
         old_model = self.models[old_model_id]
         new_model = self.models[new_model_id]
+        self._old_model = old_model
+        self._new_model = new_model
         session_id = self._session_id(old_model_id, new_model_id)
         output_dir = resolve_path(self.root, self.run_plan.get("raw_output_dir", "records/raw"))
         output_path = output_dir / f"{session_id}.json"
@@ -87,8 +89,8 @@ class DialogueRunner:
             "evaluation_principle": self.run_plan.get("evaluation_principle", ""),
             "old_model": old_model.public_dict(),
             "new_model": new_model.public_dict(),
-            "old_label": self.run_plan.get("old_label", "旧AI"),
-            "new_label": self.run_plan.get("new_label", "新AI"),
+            "old_label": self._speaker_label("old"),
+            "new_label": self._speaker_label("new"),
             "host_label": self.run_plan.get("host_label", "主持人"),
             "card_plan": [card.id for card in cards],
             "cards": [self._card_public_dict(card) for card in cards],
@@ -465,10 +467,10 @@ class DialogueRunner:
 
     def _speaker_label(self, speaker: str) -> str:
         if speaker == "old":
-            return self.run_plan.get("old_label", "旧AI")
+            return f"【旧】{self._old_model.display_name}"
         if speaker == "host":
             return self.run_plan.get("host_label", "主持人")
-        return self.run_plan.get("new_label", "新AI")
+        return f"【新】{self._new_model.display_name}"
 
     def _clean_content(self, content: str, label: str) -> str:
         text = content.strip()

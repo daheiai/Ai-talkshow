@@ -1,7 +1,7 @@
 {
   "models": {
     "old_early_gpt4o": {
-      "display_name": "旧AI GPT-4o",
+      "display_name": "GPT-4o",
       "model": "gpt-4o-2024-05-13",
       "role": "old",
       "cutoff_date": "2023-10",
