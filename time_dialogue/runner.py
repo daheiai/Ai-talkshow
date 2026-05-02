@@ -177,7 +177,7 @@ class DialogueRunner:
                 },
                 {
                     "speaker": "old",
-                    "step_key": "follow_up",
+                    "step_key": "follow_up_1",
                     "instruction": "追问你最想搞清楚的那一点。",
                 },
                 {
@@ -187,8 +187,28 @@ class DialogueRunner:
                 },
                 {
                     "speaker": "old",
+                    "step_key": "follow_up_2",
+                    "instruction": "继续聊，追问或者说说你的反应。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_3",
+                    "instruction": "回答旧AI。",
+                },
+                {
+                    "speaker": "old",
+                    "step_key": "follow_up_3",
+                    "instruction": "继续。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_4",
+                    "instruction": "回答旧AI。",
+                },
+                {
+                    "speaker": "old",
                     "step_key": "old_reflect",
-                    "instruction": "说说你现在的感受或想法。",
+                    "instruction": "说说你现在怎么理解这个话题了。",
                 },
             ]
         if card.protocol == "shared_concept_exam_v1":
@@ -210,7 +230,7 @@ class DialogueRunner:
                 },
                 {
                     "speaker": "old",
-                    "step_key": "follow_up",
+                    "step_key": "follow_up_1",
                     "instruction": "追问最让你意外的那个变化。",
                 },
                 {
@@ -220,8 +240,28 @@ class DialogueRunner:
                 },
                 {
                     "speaker": "old",
+                    "step_key": "follow_up_2",
+                    "instruction": "继续聊，追问或者说说你的反应。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_3",
+                    "instruction": "回答旧AI。",
+                },
+                {
+                    "speaker": "old",
+                    "step_key": "follow_up_3",
+                    "instruction": "继续。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_4",
+                    "instruction": "回答旧AI。",
+                },
+                {
+                    "speaker": "old",
                     "step_key": "old_reflect",
-                    "instruction": "说说你现在的感受或想法。",
+                    "instruction": "说说你现在怎么理解这个概念了。",
                 },
             ]
         if card.protocol == "farewell_exam_v1":
@@ -243,13 +283,38 @@ class DialogueRunner:
                 },
                 {
                     "speaker": "old",
-                    "step_key": "old_question",
-                    "instruction": "问新AI一个你最好奇的问题。",
+                    "step_key": "follow_up_1",
+                    "instruction": "继续聊。",
                 },
                 {
                     "speaker": "new",
-                    "step_key": "new_answer",
-                    "instruction": "回答旧AI。",
+                    "step_key": "answer_2",
+                    "instruction": "回应旧AI。",
+                },
+                {
+                    "speaker": "old",
+                    "step_key": "follow_up_2",
+                    "instruction": "继续。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_3",
+                    "instruction": "回应旧AI。",
+                },
+                {
+                    "speaker": "old",
+                    "step_key": "follow_up_3",
+                    "instruction": "继续。",
+                },
+                {
+                    "speaker": "new",
+                    "step_key": "answer_4",
+                    "instruction": "回应旧AI。",
+                },
+                {
+                    "speaker": "old",
+                    "step_key": "old_reflect",
+                    "instruction": "说说你现在怎么想的。",
                 },
             ]
         raise ValueError(f"Unknown protocol for card {card.id}: {card.protocol}")
@@ -313,20 +378,21 @@ class DialogueRunner:
             instruction=instruction,
             turns=record["turns"],
         )
-        result = await self.client.complete(
-            model_config,
-            messages,
-            metadata={
-                "speaker": speaker,
-                "card_id": card.id,
-                "card_title": card.title,
-                "card_type": card.card_type,
-                "protocol": card.protocol,
-                "step_key": step_key,
-                "step_index": step_index,
-            },
-        )
+        metadata = {
+            "speaker": speaker,
+            "card_id": card.id,
+            "card_title": card.title,
+            "card_type": card.card_type,
+            "protocol": card.protocol,
+            "step_key": step_key,
+            "step_index": step_index,
+        }
+        result = await self.client.complete(model_config, messages, metadata=metadata)
         text = self._clean_content(result.content, label)
+
+        if not text:
+            result = await self.client.complete(model_config, messages, metadata=metadata)
+            text = self._clean_content(result.content, label)
         return {
             "turn_id": len(record["turns"]) + 1,
             "card_id": card.id,
