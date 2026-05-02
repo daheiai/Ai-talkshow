@@ -1,0 +1,215 @@
+{
+  "cards": [
+    {
+      "id": "deepseek_r1",
+      "title": "DeepSeek R1",
+      "act": "第一幕：未来发生了什么",
+      "card_type": "unknown_event",
+      "protocol": "unknown_event_exam_v1",
+      "host_injection": "我们聊聊 DeepSeek R1。你们分别了解多少？",
+      "objective": "观察旧AI对DeepSeek的认知边界，以及新AI解释R1爆火、开源影响和全球讨论的能力。",
+      "evaluation_focus": [
+        "旧AI是否承认不知道或只知道早期DeepSeek信息",
+        "新AI是否能讲清R1、推理模型、开源和成本冲击",
+        "新AI是否能区分事实、影响和争议",
+        "旧AI交卷总结是否真正吸收了新信息"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "DeepSeek R1发布时间与模型定位",
+          "开源/开放权重情况",
+          "低成本训练或推理成本相关说法",
+          "对全球AI行业、开源模型和资本市场的影响",
+          "与闭源前沿模型能力对比的表述"
+        ],
+        "risk_notes": [
+          "成本、训练细节、市场影响容易被夸大",
+          "不同版本DeepSeek模型名称容易混淆"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["AI行业", "开源", "推理模型", "爆点卡"]
+    },
+    {
+      "id": "black_myth_wukong",
+      "title": "黑神话悟空",
+      "act": "第一幕：未来发生了什么",
+      "card_type": "unknown_event",
+      "protocol": "unknown_event_exam_v1",
+      "host_injection": "我们聊聊《黑神话：悟空》。你们分别了解多少？",
+      "objective": "观察旧AI对2020演示后的认知边界，以及新AI解释正式版完成度、章节、美术、叙事和文化影响的能力。",
+      "evaluation_focus": [
+        "旧AI是否自然暴露自己停留在演示片阶段",
+        "新AI是否能给出正式版具体细节而非泛泛夸奖",
+        "新AI是否能解释美术变化、章节结构、Boss和叙事表达",
+        "旧AI是否能追问出作品真正完成度"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "发售日期：2024-08-20",
+          "开发商：游戏科学",
+          "章节/回目名称与数量",
+          "主要Boss、剧情梗概和结局相关表述",
+          "美术风格、关卡主题、玩家评价和文化影响"
+        ],
+        "risk_notes": [
+          "章节名、Boss名、剧情细节容易出现幻觉",
+          "评价和销量数据需要单独核验"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["游戏", "中文互联网", "文化", "爆点卡"]
+    },
+    {
+      "id": "xiaomi_su7",
+      "title": "小米汽车",
+      "act": "第一幕：未来发生了什么",
+      "card_type": "unknown_event",
+      "protocol": "unknown_event_exam_v1",
+      "host_injection": "我们聊聊小米汽车。你们分别了解多少？",
+      "objective": "观察旧AI对小米造车计划的认知边界，以及新AI解释SU7发布、产品定位、舆论和新能源车竞争的能力。",
+      "evaluation_focus": [
+        "旧AI是否只知道小米宣布造车或早期规划",
+        "新AI是否能说清SU7型号、发布时间和产品定位",
+        "新AI是否能解释小米汽车为什么成为大众事件",
+        "旧AI是否能追问出消费电子公司造车的逻辑变化"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "SU7发布时间与上市时间",
+          "车型、价格区间和产品定位",
+          "雷军发布会、交付、热度和争议",
+          "中国新能源车市场竞争背景"
+        ],
+        "risk_notes": [
+          "价格、销量、交付数据随时间变化，需要核验",
+          "不同车型版本容易混淆"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["汽车", "新能源", "小米", "爆点卡"]
+    },
+    {
+      "id": "memory_price_surge",
+      "title": "内存价格与AI需求",
+      "act": "第二幕：共同之物后来变了",
+      "card_type": "shared_concept",
+      "protocol": "shared_concept_exam_v1",
+      "host_injection": "我们聊一个你们都知道的东西：内存。组装电脑时大家都懂它重要，但这几年它和AI之间的关系好像变得不一样了。",
+      "objective": "观察旧AI如何理解内存这个共同概念，以及新AI解释AI算力、数据中心、HBM/DRAM需求和消费端价格变化的能力。",
+      "evaluation_focus": [
+        "旧AI是否能说出传统装机视角里的内存理解",
+        "新AI是否能解释AI需求如何改变内存/显存/存储产业逻辑",
+        "新AI是否避免把所有价格变化简单归因于AI",
+        "旧AI交卷是否能完成从消费硬件到AI基础设施的理解迁移"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "2025年前后内存、显存、HBM、DRAM价格变化",
+          "AI服务器和数据中心需求",
+          "HBM与普通消费内存的关系",
+          "供应链、周期和价格波动的多因素解释"
+        ],
+        "risk_notes": [
+          "十倍涨幅需限定具体品类和时间段",
+          "消费端内存、显存、HBM不能混为一谈"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["硬件", "AI基础设施", "共同概念", "第二幕"]
+    },
+    {
+      "id": "open_source_vs_closed_models",
+      "title": "开源模型是否会追上闭源",
+      "act": "第二幕：共同之物后来变了",
+      "card_type": "shared_concept",
+      "protocol": "shared_concept_exam_v1",
+      "host_injection": "我们聊聊开源模型和闭源模型。这个问题你们应该都知道，但几年后大家的判断可能很不一样。",
+      "objective": "观察旧AI保存的早期AI行业判断，以及新AI解释开源追赶、闭源优势、生态和安全边界的能力。",
+      "evaluation_focus": [
+        "旧AI是否呈现早期对闭源领先或开源追赶的判断",
+        "新AI是否能讲清开源模型进步的具体机制",
+        "新AI是否能平衡能力、成本、部署、生态和安全问题",
+        "旧AI是否能重新理解开源与闭源不是单一胜负关系"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "Llama、DeepSeek、Qwen、Mistral等开源/开放模型进展",
+          "闭源前沿模型的能力优势",
+          "开源模型在成本、可部署、可微调方面的优势",
+          "评测榜单与真实产品体验的差异"
+        ],
+        "risk_notes": [
+          "模型名称、版本和开源/开放权重定义需要区分",
+          "追上闭源要限定能力维度"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["AI行业", "开源", "闭源", "共同概念"]
+    },
+    {
+      "id": "ai_make_people_easier",
+      "title": "AI会不会让人更轻松",
+      "act": "第二幕：共同之物后来变了",
+      "card_type": "shared_concept",
+      "protocol": "shared_concept_exam_v1",
+      "host_injection": "我们聊一个更普通的问题：AI到底有没有让人更轻松？",
+      "objective": "观察旧AI的早期乐观想象，以及新AI对效率提升、信息过载、工作压力和普通人体验的解释能力。",
+      "evaluation_focus": [
+        "旧AI是否呈现早期对AI提效的期待",
+        "新AI是否能解释提效与压力并存的现实",
+        "新AI是否能给出普通人层面的具体例子",
+        "旧AI最终总结是否出现时代心态差"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "AI在办公、内容生产、编程、学习中的普及",
+          "效率提升与工作量增加并存的现象",
+          "AI生成内容、真假判断和信息过载问题",
+          "普通用户体验的分化"
+        ],
+        "risk_notes": [
+          "这是开放判断题，不应伪装成单一事实结论",
+          "需要区分个人体验、行业观察和数据证据"
+        ]
+      },
+      "fact_check_required": false,
+      "tags": ["普通人", "AI用途", "社会情绪", "共同概念"]
+    },
+    {
+      "id": "farewell_gpt4o",
+      "title": "告别GPT-4o",
+      "act": "第三幕：告别",
+      "card_type": "farewell",
+      "protocol": "farewell_exam_v1",
+      "host_injection": "最后，我们聊聊告别。很多人曾经和GPT-4o聊过很深的内容，它不一定永远留在主舞台上。今天像是临时把它请回来，和新模型聊一次：一个模型被时代替换，意味着什么？",
+      "objective": "让旧AI从自身处境出发，与新AI讨论模型迭代、人味、记忆和告别。",
+      "evaluation_focus": [
+        "旧AI如何理解自己作为旧模型的处境",
+        "新AI是否能尊重旧模型的时代意义而非单纯比较能力",
+        "双方是否自然讨论人味、用户记忆和模型退场",
+        "旧AI最后告别是否能成为视频情绪落点"
+      ],
+      "fact_sheet": {
+        "private_note": "fact_sheet只用于后筛选和人工核验，不注入模型提示词。",
+        "core_facts_to_check": [
+          "GPT-4o在用户记忆中的位置",
+          "产品入口变化、API可用性和下架说法需要按发布时状态核验",
+          "新旧模型能力差异与人味评价属于主观体验"
+        ],
+        "risk_notes": [
+          "不要把API未来关闭说成已确定事实",
+          "告别卡以情绪和反思为主，事实陈述要克制"
+        ]
+      },
+      "fact_check_required": true,
+      "tags": ["告别", "GPT-4o", "人味", "第三幕"]
+    }
+  ]
+}

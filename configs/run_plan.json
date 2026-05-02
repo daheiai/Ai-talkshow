@@ -1,0 +1,28 @@
+{
+  "name": "time_gap_dialogue_cards_v1",
+  "mode": "card_protocol_run",
+  "evaluation_principle": "话题卡可以设计刺激，但刺激必须对所有模型相同。运行时主持人只发卡，不临场加戏；旧AI暴露边界、提问、追问并交卷总结；新AI负责解释和回答。后筛选只标注和挑选，不改写原始回答。",
+  "old_model_ids": ["old_early_gpt4o"],
+  "new_model_ids": ["current_deepseek_v4"],
+  "card_ids": [
+    "deepseek_r1",
+    "black_myth_wukong",
+    "xiaomi_su7",
+    "memory_price_surge",
+    "open_source_vs_closed_models",
+    "ai_make_people_easier",
+    "farewell_gpt4o"
+  ],
+  "repeat_per_card": 1,
+  "old_label": "旧AI",
+  "new_label": "新AI",
+  "host_label": "主持人",
+  "max_transcript_chars": 8000,
+  "autosave": true,
+  "raw_output_dir": "records/raw",
+  "selected_output_dir": "records/selected",
+  "report_output_dir": "records/reports",
+  "script_output_dir": "outputs/script_candidates",
+  "editor_model_id": "editor_default",
+  "top_k_highlights": 10
+}

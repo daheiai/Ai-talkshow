@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+configs/models.json
+
+# Generated run outputs can be large. Remove these lines if you want to version them.
+records/raw/*.json
+records/selected/*.json
+records/selected/*.md
+outputs/script_candidates/*.md
+outputs/visual_cards/*.json

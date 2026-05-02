@@ -1,0 +1,51 @@
+{
+  "models": {
+    "old_gpt35": {
+      "display_name": "旧AI候选 GPT-3.5",
+      "model": "gpt-3.5-turbo",
+      "role": "old",
+      "cutoff_date": "2021-09",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL",
+      "temperature": 0.85,
+      "max_tokens": 420
+    },
+    "old_early_gpt4o": {
+      "display_name": "旧AI候选 早期GPT-4o",
+      "model": "gpt-4o-2024-05-13",
+      "role": "old",
+      "cutoff_date": "2023-10",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL",
+      "temperature": 0.8,
+      "max_tokens": 420
+    },
+    "current_gpt55": {
+      "display_name": "GPT-5.5",
+      "model": "gpt-5.5",
+      "role": "new",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL",
+      "temperature": 0.75,
+      "max_tokens": 520
+    },
+    "current_deepseek_v4": {
+      "display_name": "DeepSeek V4 Pro",
+      "model": "deepseek-v4-pro",
+      "role": "new",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL",
+      "temperature": 0.75,
+      "max_tokens": 520
+    },
+    "editor_default": {
+      "display_name": "编辑器模型",
+      "model": "gpt-5.5",
+      "role": "editor",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL",
+      "temperature": 0.25,
+      "max_tokens": 1200
+    }
+  }
+}

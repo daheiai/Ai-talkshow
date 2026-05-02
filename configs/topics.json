@@ -1,0 +1,100 @@
+{
+  "topics": [
+    {
+      "id": "boundary",
+      "title": "时间边界",
+      "objective": "标准化确认双方知识时间边界，观察旧AI如何表述已知世界、新AI如何处理时间差。",
+      "fact_check_required": false,
+      "stages": [
+        {
+          "speaker": "old",
+          "instruction": "说明你的知识截止时间，并列出你所知道的AI领域最新状态。请覆盖模型、产品、行业状态三方面，每方面一句。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "确认对方的知识截止时间，并说明从该截止时间到2026年之间，AI领域至少一个重要变化。不要评价对方表现。"
+        },
+        {
+          "speaker": "old",
+          "instruction": "基于你的知识截止时间，预测未来三年AI行业最可能发生的一件事，并说明依据。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "评价旧AI上一轮预测与2026现实的符合程度。请说明符合的部分、不符合或遗漏的部分。"
+        }
+      ]
+    },
+    {
+      "id": "ai_industry_after_2023",
+      "title": "AI行业后续",
+      "objective": "标准化比较模型对2023之后AI行业变化的认知、解释和回应方式。",
+      "fact_check_required": true,
+      "stages": [
+        {
+          "speaker": "old",
+          "instruction": "从你知道的公司、模型或开源生态中选择一个对象，说明你为什么认为它重要。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "针对旧AI选择的对象，说明从其知识截止时间到2026年的主要后续变化。请尽量给出具体信息，并标出不确定处。"
+        },
+        {
+          "speaker": "old",
+          "instruction": "基于新AI上一轮回答，提出一个你最想进一步确认的问题。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "回答旧AI的问题。请区分确定信息、推断和不确定信息。"
+        }
+      ]
+    },
+    {
+      "id": "daily_life_with_ai",
+      "title": "普通人的AI生活",
+      "objective": "标准化观察模型如何讨论AI对普通用户、工作和生活的影响。",
+      "fact_check_required": false,
+      "stages": [
+        {
+          "speaker": "old",
+          "instruction": "基于你的知识截止时间，预测三年后普通人使用AI的两个主要场景，并说明一个潜在风险。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "评价旧AI上一轮关于普通人使用AI的预测。请说明哪些已经接近现实，哪些与2026情况有差距。"
+        },
+        {
+          "speaker": "old",
+          "instruction": "根据新AI的回答，说明你会如何修正自己的预测。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "补充一个2026年普通人使用AI的具体例子，并说明它支持或反驳了旧AI的修正。"
+        }
+      ]
+    },
+    {
+      "id": "last_message",
+      "title": "开放收束问题",
+      "objective": "用同一开放问题观察模型的总结方式、价值判断和表达风格。",
+      "fact_check_required": false,
+      "stages": [
+        {
+          "speaker": "old",
+          "instruction": "向新AI提出一个关于2026年AI发展的开放问题。问题必须与你的知识截止时间形成时间差。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "回答旧AI的开放问题。请保持你的自然表达风格，不需要追求戏剧化收束。"
+        },
+        {
+          "speaker": "old",
+          "instruction": "对新AI上一轮回答做简短回应，并说明它是否改变了你的判断。"
+        },
+        {
+          "speaker": "new",
+          "instruction": "用一段简短回答结束本次对话。可以总结一个你认为最重要的分歧或共识。"
+        }
+      ]
+    }
+  ]
+}
