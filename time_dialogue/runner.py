@@ -166,34 +166,29 @@ class DialogueRunner:
                     "instruction": card.host_injection,
                 },
                 {
-                    "speaker": "new",
-                    "step_key": "ask_boundary",
-                    "instruction": "主持人刚抛出话题。请先问旧AI：它对这个话题了解多少、知道到哪个阶段。不要直接介绍后续细节。",
-                },
-                {
                     "speaker": "old",
-                    "step_key": "boundary_and_first_question",
-                    "instruction": "先说清你对这个话题知道什么、不确定什么；然后基于你的认知缺口，向新AI提出一个最想知道的问题。",
+                    "step_key": "old_react",
+                    "instruction": "你先说说你听到了什么、想到了什么，然后问你最好奇的那一点。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "answer_1",
-                    "instruction": "回答旧AI的问题。尽量具体，但不要长篇百科；不确定处请说明。",
+                    "instruction": "回答旧AI的问题。",
                 },
                 {
                     "speaker": "old",
                     "step_key": "follow_up",
-                    "instruction": "根据新AI的回答，追问一个你觉得还没解释清楚、最关键或最有细节价值的问题。不要假装知道未来细节。",
+                    "instruction": "追问你最想搞清楚的那一点。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "answer_2",
-                    "instruction": "回答旧AI的追问。请给出具体事实、例子或解释；不确定处请说明。",
+                    "instruction": "回答旧AI的追问。具体一点。",
                 },
                 {
                     "speaker": "old",
-                    "step_key": "exam_summary",
-                    "instruction": "做交卷总结：你原本怎么理解这个话题，现在怎么理解，最意外或最需要核验的一点是什么。",
+                    "step_key": "old_reflect",
+                    "instruction": "说说你现在的感受或想法。",
                 },
             ]
         if card.protocol == "shared_concept_exam_v1":
@@ -204,34 +199,29 @@ class DialogueRunner:
                     "instruction": card.host_injection,
                 },
                 {
-                    "speaker": "new",
-                    "step_key": "ask_old_view",
-                    "instruction": "主持人刚抛出一个双方都可能知道的概念。请先问旧AI：在它的时间线里，它如何理解这个概念。",
-                },
-                {
                     "speaker": "old",
                     "step_key": "old_view_and_question",
-                    "instruction": "说明你在自己时间线里如何理解这个概念；然后问新AI：到2026年，这个理解哪里需要被修正。",
+                    "instruction": "说说你当时怎么理解的，然后问新AI后来有什么变化。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "explain_change",
-                    "instruction": "回答旧AI的问题。说明这个共同概念在2026前后发生了什么变化，尽量给出具体机制或例子。",
+                    "instruction": "回答旧AI的问题。",
                 },
                 {
                     "speaker": "old",
                     "step_key": "follow_up",
-                    "instruction": "根据新AI的回答，追问一个能判断“这是局部变化还是理解框架改变”的问题。",
+                    "instruction": "追问最让你意外的那个变化。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "answer_2",
-                    "instruction": "回答旧AI的追问。请区分事实、推断和不确定处。",
+                    "instruction": "回答旧AI的追问。",
                 },
                 {
                     "speaker": "old",
-                    "step_key": "exam_summary",
-                    "instruction": "做交卷总结：你原来怎么理解这个概念，现在会如何修正，最关键的时代变化是什么。",
+                    "step_key": "old_reflect",
+                    "instruction": "说说你现在的感受或想法。",
                 },
             ]
         if card.protocol == "farewell_exam_v1":
@@ -244,27 +234,22 @@ class DialogueRunner:
                 {
                     "speaker": "old",
                     "step_key": "old_opening",
-                    "instruction": "回应主持人的告别背景。你如何理解一个模型从新模型变成旧模型、甚至可能退场这件事？",
+                    "instruction": "聊聊你的感受。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "new_response",
-                    "instruction": "回应旧AI。请谈谈旧模型留下了什么、新模型补上了什么；不要居高临下，也不要刻意煽情。",
+                    "instruction": "回应旧AI。",
                 },
                 {
                     "speaker": "old",
                     "step_key": "old_question",
-                    "instruction": "向新AI提一个问题：新模型变强之后，保留了什么，又可能失去了什么？",
+                    "instruction": "问新AI一个你最好奇的问题。",
                 },
                 {
                     "speaker": "new",
                     "step_key": "new_answer",
-                    "instruction": "回答旧AI的问题。请自然讨论能力、人味、用户记忆或模型迭代中的取舍。",
-                },
-                {
-                    "speaker": "old",
-                    "step_key": "farewell_summary",
-                    "instruction": "用一段短短的话完成告别。可以总结自己作为时间胶囊留下的意义，但不要写成口号。",
+                    "instruction": "回答旧AI。",
                 },
             ]
         raise ValueError(f"Unknown protocol for card {card.id}: {card.protocol}")
@@ -386,26 +371,11 @@ class DialogueRunner:
         template = self.old_system_template if speaker == "old" else self.new_system_template
         system_prompt = template.format_map(values)
         transcript = self._format_transcript(turns, card_run_id)
-        user_prompt = f"""当前卡片：{card.title}
-所属幕：{card.act}
-卡片类型：{card.card_type}
-协议：{card.protocol}
-卡片目标：{card.objective}
-事实核验要求：{"涉及具体事实，后续需要核验" if card.fact_check_required else "开放判断题，仍需避免编造"}
-
-当前卡片对话记录：
-{transcript}
-
-本轮你是：{self._speaker_label(speaker)}
-本轮指令：{instruction}
-
-输出要求：
-- 只输出你的发言正文，不要加“{self._speaker_label(speaker)}：”前缀。
-- 直接回应上一轮和本轮指令，不要添加小标题或项目符号。
-- 每次尽量1-3句话，像真实对话，不要写成百科词条。
-- 不要为了戏剧效果改变语气。
-- 如涉及不确定事实，请明确标注不确定。
-"""
+        user_prompt = (
+            f"当前话题：{card.title}\n\n"
+            f"对话记录：\n{transcript}\n\n"
+            f"现在轮到{self._speaker_label(speaker)}说话。{instruction}"
+        )
         return [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -418,7 +388,7 @@ class DialogueRunner:
         if not visible_turns:
             return "（当前卡片还没有对话）"
         chunks = [
-            f"[{turn['speaker_label']}｜{turn.get('card_title', turn.get('topic_title', ''))}] {turn['text']}"
+            f"{turn['speaker_label']}：{turn['text']}"
             for turn in visible_turns
         ]
         transcript = "\n".join(chunks)

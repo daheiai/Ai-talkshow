@@ -8,7 +8,7 @@
       "api_key_env": "OPENAI_API_KEY",
       "base_url_env": "LLM_URL",
       "temperature": 0.8,
-      "max_tokens": 420
+      "max_tokens": 180
     },
     "current_deepseek_v4": {
       "display_name": "DeepSeek V4 Pro",
@@ -17,7 +17,7 @@
       "api_key_env": "OPENAI_API_KEY",
       "base_url_env": "LLM_URL",
       "temperature": 0.75,
-      "max_tokens": 520
+      "max_tokens": 200
     },
     "editor_default": {
       "display_name": "编辑器模型 DeepSeek V4 Pro",

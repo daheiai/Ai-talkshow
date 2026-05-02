@@ -1,7 +1,7 @@
 {
   "name": "time_gap_dialogue_cards_v1",
   "mode": "card_protocol_run",
-  "evaluation_principle": "话题卡可以设计刺激，但刺激必须对所有模型相同。运行时主持人只发卡，不临场加戏；旧AI暴露边界、提问、追问并交卷总结；新AI负责解释和回答。后筛选只标注和挑选，不改写原始回答。",
+  "evaluation_principle": "话题卡给方向，不限制聊天内容和风格。主持人只发卡，不临场加戏。后筛选只标注和挑选，不改写原始回答。",
   "old_model_ids": ["old_early_gpt4o"],
   "new_model_ids": ["current_deepseek_v4"],
   "card_ids": [
