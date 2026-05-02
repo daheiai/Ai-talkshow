@@ -4,7 +4,7 @@
 
 原则：
 
-> 话题卡可以设计刺激，但刺激必须对所有模型相同。运行时主持人只发卡，不临场加戏；旧AI暴露边界、提问、追问并交卷总结；新AI负责解释和回答。后筛选只标注和挑选，不改写原始回答。
+> 话题卡负责制造悬念和立场，但刺激必须对所有模型相同。运行时旧AI先用自己的旧时代信念下注，新AI回应这个判断；导演只调度下一轮节奏，不替模型改写内容。后筛选只标注和挑选，不改写原始回答。
 
 ## 为什么先用 Python，不做 PHP
 
@@ -34,7 +34,15 @@
 
 ## 运行协议
 
-目前有三种协议：
+默认使用 `director_dialogue_run`：
+
+- 主持人只抛出卡片悬念。
+- 旧AI第一轮必须先预测或表态，不直接等新AI介绍。
+- 新AI第一轮只回应旧AI预测中的一个冲突点，不百科式展开。
+- 后续每轮由 `prompts/director_prompt.txt` 判断下一步：继续撞预测、讲具体场景、转向感受，或收束。
+- 每张卡结束后会写入 `session_memory`，后面的卡可以自然引用前面形成的信息差。
+
+旧的固定协议仍保留作兼容，把 `configs/run_plan.json` 里的 `use_director` 改成 `false` 即可使用：
 
 - `unknown_event_exam_v1`：旧AI不知道或不完整知道的未来事件。新AI先问边界，旧AI提问，新AI回答，旧AI追问，旧AI交卷。
 - `shared_concept_exam_v1`：双方都知道的共同概念，但2026年的理解发生变化。旧AI先说旧理解，新AI解释变化，旧AI追问并交卷。
@@ -48,8 +56,9 @@ configs/
   cards.json               七张话题卡
   run_plan.json            默认运行计划
 prompts/
-  old_ai_system.txt        旧AI“小白考官”提示词
-  new_ai_system.txt        新AI解释者提示词
+  old_ai_system.txt        旧AI“带时代信念的GPT-4o”提示词
+  new_ai_system.txt        新AI回应预测的提示词
+  director_prompt.txt      运行时对话导演提示词
   editor_prompt.txt        后筛选导演评分提示词
 records/
   raw/                     原始对话JSON
@@ -195,6 +204,9 @@ LLM_URL=你的OpenAI-compatible接口地址
 - `host_injection`：主持人发卡时说的话。
 - `protocol`：使用哪种对话协议。
 - `objective`：这张卡想观察什么。
+- `tension`：这张卡要制造的核心碰撞。
+- `old_prediction_axes`：旧AI第一轮可以下注的角度。
+- `emotion_pivot`：导演后半段可以转向的情绪层。
 - `evaluation_focus`：后筛选时关注哪些能力。
 - `fact_sheet`：人工核验用，不给模型看。
 - `tags`：后续检索和剪辑用。

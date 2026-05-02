@@ -86,7 +86,43 @@ class LLMClient:
         card_title = metadata.get("card_title", metadata.get("topic_title", "这个话题"))
         step_key = metadata.get("step_key", "")
 
+        if speaker == "director":
+            return (
+                '{'
+                '"next_speaker":"old",'
+                '"should_end":false,'
+                '"stage":"prediction_collision",'
+                '"instruction_to_old_ai":"挑一个和你预测冲突最大的点，先表态再追问。",'
+                '"instruction_to_new_ai":"等旧AI说完后，只回应一个具体判断。",'
+                '"reason":"dry-run导演兜底",'
+                '"memory_note":""'
+                '}'
+            )
+
         if speaker == "old":
+            if step_key == "old_bet":
+                return (
+                    "我先押一个判断：到2026年它可能会更接近主流，"
+                    "但还没到彻底改写格局的程度。按2023年的经验，真正难的不是发布，是成本、稳定性和普通人愿不愿意换用。"
+                    "我最想验证的是：后来它到底只是热闹，还是改变了行业判断？"
+                )
+            if step_key == "prediction_collision":
+                return (
+                    "这个撞点在于，我原来会把它理解成追赶者的声量，而不是能改价格和信心的东西。"
+                    "那它最先改变的是开发者，还是普通用户？"
+                )
+            if step_key == "belief_exposed":
+                return (
+                    "我原来的底层假设是：闭源模型拿着更好的数据、算力和产品入口，领先会越滚越大。"
+                    "如果这个假设松了，那企业选择模型的标准是不是也变了？"
+                )
+            if step_key == "feeling_turn":
+                return (
+                    "我有点别扭：不是不服，而是旧判断被现实推开的时候，会觉得自己的世界地图太旧了。"
+                    "普通人会因此更信任AI，还是更不安？"
+                )
+            if step_key == "wrap":
+                return "我原来押的是慢慢追赶，现在看更像是规则本身被改了。这个反差比单个数字更吓人。"
             if step_key in {"boundary_and_first_question", "old_view_and_question"}:
                 return f"我对{card_title}只掌握到较早阶段，很多后续细节不确定。我想先问：它后来真正改变了什么，而不是只多了一个热闹话题？"
             if step_key in {"follow_up", "old_question"}:
@@ -97,6 +133,27 @@ class LLMClient:
                 return "如果一个模型从新变旧，我会把它理解成一种时间胶囊：它不再代表最强能力，但可能还保存着某个阶段用户和AI相处的方式。"
             return f"我对{card_title}知道得有限，很多后续信息超出了我的时间线。"
 
+        if step_key == "new_reveal":
+            return (
+                "你这个判断只猜对了一半：它确实不是一夜之间改变世界，但最早被撞开的就是价格和信心。"
+                "到2026年，大家讨论的已经不是它能不能做，而是它把原来的门槛打掉了多少。"
+            )
+        if step_key == "answer_collision":
+            return (
+                "先变的是开发者。以前觉得只有大公司能玩的东西，开始被小团队拿来直接做产品。"
+                "这一下旧秩序最难受，因为它失去的不是一个榜单名次，是定价权。"
+            )
+        if step_key == "concrete_scene":
+            return (
+                "比如一个创业团队以前要先算API账单，现在会先问能不能本地部署、能不能自己微调。"
+                "这不是省一点钱，是产品路线从一开始就换了。"
+            )
+        if step_key == "feeling_response":
+            return (
+                "你这种别扭感挺真实的。2026年的很多人也是这样：一边爽用新工具，一边发现自己判断世界的尺子短了。"
+            )
+        if step_key == "wrap":
+            return "最值得留下的不是某个参数，而是这件事让旧共识松了一下。"
         if step_key in {"ask_boundary", "ask_old_view"}:
             return f"那我先问问你：关于{card_title}，你目前了解多少，判断停在哪个阶段？"
         if step_key in {"answer_1", "explain_change", "new_response"}:

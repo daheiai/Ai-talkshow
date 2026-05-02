@@ -1,7 +1,7 @@
 {
   "name": "time_gap_dialogue_cards_v1",
-  "mode": "card_protocol_run",
-  "evaluation_principle": "话题卡给方向，不限制聊天内容和风格。主持人只发卡，不临场加戏。后筛选只标注和挑选，不改写原始回答。",
+  "mode": "director_dialogue_run",
+  "evaluation_principle": "话题卡负责制造悬念和立场，旧AI先下注，新AI回应判断；导演只调度节奏，不替模型改写内容。后筛选只标注和挑选，不改写原始回答。",
   "old_model_ids": ["old_early_gpt4o"],
   "new_model_ids": ["current_deepseek_v4"],
   "card_ids": [
@@ -18,6 +18,12 @@
   "new_label": "新AI",
   "host_label": "主持人",
   "max_transcript_chars": 8000,
+  "use_director": true,
+  "director_model_id": "editor_default",
+  "min_model_turns_per_card": 8,
+  "max_model_turns_per_card": 14,
+  "use_cross_card_memory": true,
+  "cross_card_memory_items": 3,
   "autosave": true,
   "raw_output_dir": "records/raw",
   "selected_output_dir": "records/selected",
