@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Talkshow 导播台</title>
+  <style>
+    :root {
+      --page: #f4f5f2;
+      --surface: rgba(255, 255, 255, .82);
+      --surface-strong: #ffffff;
+      --ink: #191b1f;
+      --muted: #68707c;
+      --soft: #8a929d;
+      --line: rgba(25, 27, 31, .09);
+      --line-strong: rgba(25, 27, 31, .16);
+      --accent: #f06b21;
+      --accent-dark: #c85112;
+      --accent-soft: #fff0e7;
+      --old: #9a671f;
+      --old-soft: #f8f3ea;
+      --new: #0f6b70;
+      --new-soft: #edf6f6;
+      --director: #e65d1d;
+      --director-soft: #fff2eb;
+      --host: #444c57;
+      --host-soft: #f1f2f3;
+      --shadow: 0 14px 42px rgba(31, 38, 46, .08);
+      --shadow-soft: 0 8px 24px rgba(31, 38, 46, .055);
+      --font-sans: "PingFang SC", "Helvetica Neue", "Hiragino Sans GB", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+      --font-mono: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(240, 107, 33, .06), transparent 30%),
+        linear-gradient(315deg, rgba(15, 107, 112, .06), transparent 34%),
+        var(--page);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(25, 27, 31, .16);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      background-clip: padding-box;
+    }
+
+    button, select, textarea, input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      min-height: 36px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 650;
+      box-shadow: 0 2px 5px rgba(25, 27, 31, .025);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      box-shadow: var(--shadow-soft);
+    }
+
+    button.primary {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 9px 22px rgba(240, 107, 33, .22);
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    button.signal {
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      border-color: rgba(240, 107, 33, .26);
+    }
+
+    button:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: rgba(255, 255, 255, .86);
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    select, input {
+      min-height: 38px;
+      border-radius: 999px;
+      padding: 8px 14px;
+    }
+
+    textarea {
+      min-height: 108px;
+      border-radius: 18px;
+      padding: 13px 15px;
+      line-height: 1.62;
+      resize: vertical;
+      background: rgba(250, 249, 246, .78);
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      background: #fff;
+      border-color: rgba(240, 107, 33, .72);
+      box-shadow: 0 0 0 4px rgba(240, 107, 33, .1);
+    }
+
+    .topbar {
+      min-height: 86px;
+      display: grid;
+      grid-template-columns: minmax(240px, 1.35fr) minmax(150px, .82fr) minmax(150px, .82fr) minmax(240px, 1.2fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 18px 28px 14px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-family: var(--font-serif);
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .brand-title small {
+      color: var(--soft);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .brand span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      margin-top: 8px;
+      color: var(--accent-dark);
+      background: rgba(240, 107, 33, .09);
+      border: 1px solid rgba(240, 107, 33, .16);
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layout {
+      height: calc(100vh - 86px);
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(420px, 1.42fr) minmax(280px, 1fr);
+      gap: 22px;
+      padding: 0 28px 28px;
+    }
+
+    .panel {
+      min-width: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, .72);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .panel.console {
+      border-color: rgba(240, 107, 33, .22);
+      box-shadow: 0 18px 58px rgba(31, 38, 46, .1);
+    }
+
+    .panel header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .42);
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: .01em;
+    }
+
+    .panel .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .messages {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 15px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .48);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .row.actions button {
+      flex: 1 1 auto;
+    }
+
+    .checkline {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+      cursor: pointer;
+      padding: 6px 2px;
+    }
+
+    .checkline input {
+      width: auto;
+      accent-color: var(--accent);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .empty {
+      margin: auto;
+      padding: 28px 14px;
+      color: var(--soft);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .selected-box {
+      min-height: 54px;
+      max-height: 124px;
+      overflow: auto;
+      padding: 12px 14px;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(255, 242, 235, .8), rgba(255, 255, 255, .78));
+      border: 1px dashed rgba(240, 107, 33, .42);
+      border-radius: 16px;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .message {
+      position: relative;
+      padding: 13px 14px 14px;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .message:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .message.selected {
+      border-color: rgba(240, 107, 33, .78);
+      box-shadow: 0 10px 26px rgba(240, 107, 33, .14);
+    }
+
+    .message.old {
+      background: var(--old-soft);
+      border-color: rgba(154, 103, 31, .09);
+    }
+
+    .message.new {
+      background: var(--new-soft);
+      border-color: rgba(15, 107, 112, .09);
+    }
+
+    .message.director {
+      background: var(--director-soft);
+      border-color: rgba(240, 107, 33, .18);
+    }
+
+    .message.host {
+      background: var(--host-soft);
+      border-color: rgba(68, 76, 87, .1);
+    }
+
+    .message::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--host);
+    }
+
+    .message.old::before {
+      background: var(--old);
+    }
+
+    .message.new::before {
+      background: var(--new);
+    }
+
+    .message.director::before {
+      background: var(--director);
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 8px 15px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .speaker {
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 750;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .visible {
+      flex: 0 1 auto;
+      color: var(--soft);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .text {
+      white-space: pre-wrap;
+      color: var(--ink);
+      line-height: 1.62;
+    }
+
+    @media (max-width: 1080px) {
+      .topbar {
+        grid-template-columns: 1fr 1fr;
+        height: auto;
+      }
+
+      .brand {
+        grid-column: 1 / -1;
+      }
+
+      .layout {
+        height: auto;
+        min-height: calc(100vh - 86px);
+        grid-template-columns: 1fr;
+        padding: 0 18px 18px;
+      }
+
+      .panel {
+        min-height: 460px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      .layout {
+        padding: 0 12px 12px;
+        gap: 14px;
+      }
+
+      .brand-title {
+        display: block;
+      }
+
+      .brand-title small {
+        display: block;
+        margin-top: 4px;
+      }
+
+      .row.actions button,
+      .row button {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-title">
+        AI Talkshow 导播台
+        <small>Human Routing Console</small>
+      </div>
+      <span id="status">正在连接本地控制台...</span>
+    </div>
+    <select id="oldModel" aria-label="旧AI模型"></select>
+    <select id="newModel" aria-label="新AI模型"></select>
+    <select id="cardSelect" aria-label="话题卡"></select>
+    <button class="primary" id="createSession">新建会话</button>
+  </div>
+
+  <main class="layout">
+    <section class="panel">
+      <header>
+        <h2>旧 AI 视角</h2>
+        <div class="sub">MONITOR / OLD_MODEL_VISIBLE_TRANSCRIPT</div>
+      </header>
+      <div class="messages" id="oldMessages"></div>
+    </section>
+
+    <section class="panel console">
+      <header>
+        <h2>中央控制区</h2>
+        <div class="sub" id="sessionTitle">MAIN_CONSOLE / 尚未创建会话</div>
+      </header>
+      <div class="controls">
+        <textarea id="directorText" placeholder="输入导演场控指令、主持人台词，或二次编辑后的转发内容..."></textarea>
+
+        <div class="row actions">
+          <button class="signal" id="sendBoth">全场广播</button>
+          <button id="sendOld">暗发旧AI</button>
+          <button id="sendNew">暗发新AI</button>
+          <button id="sendHost">主持人发言</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <input id="runInstruction" placeholder="可选：本轮希望模型如何推进话题？">
+        <div class="row actions">
+          <button class="primary" id="runOld">推流旧AI</button>
+          <button class="primary" id="runNew">推流新AI</button>
+          <label class="checkline">
+            <input type="checkbox" id="shareReply">
+            自动抄送给另一方
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="selected-box" id="selectedMessage">未选中消息。点击任意历史消息，将其抓取到这里再分发。</div>
+        <div class="row actions">
+          <button id="forwardOld">分发给旧AI</button>
+          <button id="forwardNew">分发给新AI</button>
+          <button id="forwardBoth">分发给双方</button>
+        </div>
+        <div class="hint">默认模型回复只给“导演 + 自己”可见；另一边需要看到时，请手动转发。</div>
+
+        <div class="divider"></div>
+
+        <input id="scriptName" placeholder="模板名称：比如 开源模型第一版导播流程">
+        <div class="row actions">
+          <button class="signal" id="saveScript">保存当前流程为模板</button>
+          <select id="scriptSelect" aria-label="导演脚本"></select>
+        </div>
+        <div class="row actions">
+          <button id="createReplay">用当前新AI创建回放</button>
+          <button class="primary" id="replayNext">回放下一步</button>
+          <button id="replayAll">连续回放全部</button>
+        </div>
+        <div class="hint" id="replayInfo">回放会按原会话的导演操作顺序执行；模型回复会重新生成，转发会自动指向回放中的对应消息。</div>
+      </div>
+      <div class="messages" id="allMessages"></div>
+    </section>
+
+    <section class="panel">
+      <header>
+        <h2>新 AI 视角</h2>
+        <div class="sub">MONITOR / NEW_MODEL_VISIBLE_TRANSCRIPT</div>
+      </header>
+      <div class="messages" id="newMessages"></div>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      bootstrap: null,
+      session: null,
+      scripts: [],
+      selectedMessageId: null,
+    };
+
+    const els = {
+      status: document.getElementById("status"),
+      oldModel: document.getElementById("oldModel"),
+      newModel: document.getElementById("newModel"),
+      cardSelect: document.getElementById("cardSelect"),
+      createSession: document.getElementById("createSession"),
+      directorText: document.getElementById("directorText"),
+      runInstruction: document.getElementById("runInstruction"),
+      shareReply: document.getElementById("shareReply"),
+      sessionTitle: document.getElementById("sessionTitle"),
+      oldMessages: document.getElementById("oldMessages"),
+      newMessages: document.getElementById("newMessages"),
+      allMessages: document.getElementById("allMessages"),
+      selectedMessage: document.getElementById("selectedMessage"),
+      scriptName: document.getElementById("scriptName"),
+      scriptSelect: document.getElementById("scriptSelect"),
+      replayInfo: document.getElementById("replayInfo"),
+    };
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || response.statusText);
+      }
+      return response.json();
+    }
+
+    function setStatus(text) {
+      els.status.textContent = text;
+    }
+
+    function option(select, value, label) {
+      const node = document.createElement("option");
+      node.value = value;
+      node.textContent = label;
+      select.appendChild(node);
+    }
+
+    async function init() {
+      state.bootstrap = await api("/api/bootstrap");
+      const models = state.bootstrap.models;
+      Object.values(models)
+        .filter(model => model.role === "old")
+        .forEach(model => option(els.oldModel, model.id, `旧AI：${model.display_name}`));
+      Object.values(models)
+        .filter(model => model.role === "new")
+        .forEach(model => option(els.newModel, model.id, `新AI：${model.display_name}`));
+      option(els.cardSelect, "", "自由会话，不绑定卡片");
+      state.bootstrap.cards.forEach(card => option(els.cardSelect, card.id, card.title));
+      els.oldModel.value = state.bootstrap.defaults.old_model_id || els.oldModel.value;
+      els.newModel.value = state.bootstrap.defaults.new_model_id || els.newModel.value;
+      els.cardSelect.value = state.bootstrap.defaults.card_id || "";
+      state.scripts = state.bootstrap.scripts || [];
+      renderScripts();
+      setStatus(state.bootstrap.dry_run ? "DRY-RUN 模式 / 本地模拟" : "LIVE 模式 / 调用真实模型");
+    }
+
+    async function createSession() {
+      setStatus("正在建立通讯...");
+      state.session = await api("/api/sessions", {
+        method: "POST",
+        body: JSON.stringify({
+          old_model_id: els.oldModel.value,
+          new_model_id: els.newModel.value,
+          card_id: els.cardSelect.value || null,
+        }),
+      });
+      state.selectedMessageId = null;
+      render();
+      setStatus("会话就绪");
+    }
+
+    async function refreshSession() {
+      if (!state.session) return;
+      state.session = await api(`/api/sessions/${state.session.id}`);
+      render();
+    }
+
+    async function sendDirector(visibleTo, speaker = "director") {
+      if (!state.session) await createSession();
+      const text = els.directorText.value.trim();
+      if (!text) return;
+      await api(`/api/sessions/${state.session.id}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ text, visible_to: visibleTo, speaker }),
+      });
+      els.directorText.value = "";
+      await refreshSession();
+    }
+
+    async function runModel(speaker) {
+      if (!state.session) await createSession();
+      const visible = ["human", speaker];
+      if (els.shareReply.checked) {
+        visible.push(speaker === "old" ? "new" : "old");
+      }
+      setStatus(`等待 ${speaker === "old" ? "旧AI" : "新AI"} 响应中...`);
+      await api(`/api/sessions/${state.session.id}/run`, {
+        method: "POST",
+        body: JSON.stringify({
+          speaker,
+          instruction: els.runInstruction.value.trim(),
+          reply_visible_to: visible,
+        }),
+      });
+      els.runInstruction.value = "";
+      await refreshSession();
+      setStatus("响应接收完毕");
+    }
+
+    async function forward(target) {
+      if (!state.session || !state.selectedMessageId) return;
+      const textOverride = els.directorText.value.trim();
+      await api(`/api/sessions/${state.session.id}/forward`, {
+        method: "POST",
+        body: JSON.stringify({
+          message_id: state.selectedMessageId,
+          target,
+          text_override: textOverride,
+        }),
+      });
+      els.directorText.value = "";
+      await refreshSession();
+    }
+
+    async function refreshScripts() {
+      state.scripts = await api("/api/scripts");
+      renderScripts();
+    }
+
+    async function saveScript() {
+      if (!state.session) return;
+      setStatus("正在保存导演模板...");
+      const script = await api(`/api/sessions/${state.session.id}/script`, {
+        method: "POST",
+        body: JSON.stringify({ name: els.scriptName.value.trim() }),
+      });
+      els.scriptName.value = "";
+      await refreshScripts();
+      els.scriptSelect.value = script.id;
+      setStatus(`模板已保存：${script.name}`);
+    }
+
+    async function createReplay() {
+      const scriptId = els.scriptSelect.value;
+      if (!scriptId) return;
+      setStatus("正在创建回放会话...");
+      state.session = await api(`/api/scripts/${scriptId}/replay`, {
+        method: "POST",
+        body: JSON.stringify({
+          new_model_id: els.newModel.value,
+          old_model_id: els.oldModel.value,
+        }),
+      });
+      state.selectedMessageId = null;
+      render();
+      setStatus("回放会话已创建");
+    }
+
+    async function replayNext() {
+      if (!state.session || !state.session.replay) return;
+      setStatus("正在回放下一步...");
+      const result = await api(`/api/sessions/${state.session.id}/replay/next`, {
+        method: "POST",
+        body: "{}",
+      });
+      state.session = result.session;
+      render();
+      setStatus(result.done ? "回放已完成" : "已回放一步");
+    }
+
+    async function replayAll() {
+      if (!state.session || !state.session.replay) return;
+      setStatus("正在连续回放...");
+      const result = await api(`/api/sessions/${state.session.id}/replay/all`, {
+        method: "POST",
+        body: "{}",
+      });
+      state.session = result.session;
+      render();
+      setStatus("连续回放完成");
+    }
+
+    function render() {
+      const session = state.session;
+      els.sessionTitle.textContent = session
+        ? `MAIN_CONSOLE / ${session.title} / ${session.id}`
+        : "MAIN_CONSOLE / 尚未创建会话";
+      renderMessages(els.oldMessages, visibleMessages("old"));
+      renderMessages(els.newMessages, visibleMessages("new"));
+      renderMessages(els.allMessages, session ? session.messages : []);
+      renderSelected();
+      renderReplay();
+    }
+
+    function renderScripts() {
+      els.scriptSelect.innerHTML = "";
+      option(els.scriptSelect, "", "选择一个已保存导演模板");
+      state.scripts.forEach(script => {
+        const label = `${script.name} · ${script.card_title || "自由会话"} · ${script.action_count}步`;
+        option(els.scriptSelect, script.id, label);
+      });
+    }
+
+    function renderReplay() {
+      if (!state.session || !state.session.replay) {
+        els.replayInfo.textContent = "回放会按原会话的导演操作顺序执行；模型回复会重新生成，转发会自动指向回放中的对应消息。";
+        return;
+      }
+      const replay = state.session.replay;
+      const total = (state.session.script_actions || []).length;
+      els.replayInfo.textContent = `正在回放：${replay.script_name} / ${replay.cursor} of ${total} / ${replay.status}`;
+    }
+
+    function visibleMessages(role) {
+      if (!state.session) return [];
+      return state.session.messages.filter(message => message.visible_to.includes(role));
+    }
+
+    function renderMessages(container, messages) {
+      container.innerHTML = "";
+      if (!messages.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "-- 暂无信号 --";
+        container.appendChild(empty);
+        return;
+      }
+      messages.forEach(message => container.appendChild(messageNode(message)));
+    }
+
+    function messageNode(message) {
+      const node = document.createElement("div");
+      node.className = `message ${message.speaker}`;
+      if (message.id === state.selectedMessageId) node.classList.add("selected");
+      node.onclick = () => {
+        state.selectedMessageId = message.id;
+        render();
+      };
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const speaker = document.createElement("span");
+      speaker.className = "speaker";
+      speaker.textContent = `[ID:${message.id}] ${message.speaker_label}`;
+      const visible = document.createElement("span");
+      visible.className = "visible";
+      visible.textContent = `VIS: ${message.visible_to.join(", ")}`;
+      meta.appendChild(speaker);
+      meta.appendChild(visible);
+
+      const text = document.createElement("div");
+      text.className = "text";
+      text.textContent = message.text;
+
+      node.appendChild(meta);
+      node.appendChild(text);
+      return node;
+    }
+
+    function renderSelected() {
+      const message = selectedMessage();
+      if (!message) {
+        els.selectedMessage.textContent = "未选中消息。点击任意历史消息，将其抓取到这里再分发。";
+        return;
+      }
+      els.selectedMessage.textContent = `[抓取完成 ID:${message.id}] ${message.speaker_label}：${message.text}`;
+    }
+
+    function selectedMessage() {
+      if (!state.session || !state.selectedMessageId) return null;
+      return state.session.messages.find(message => message.id === state.selectedMessageId) || null;
+    }
+
+    els.createSession.onclick = createSession;
+    document.getElementById("sendBoth").onclick = () => sendDirector(["human", "old", "new"]);
+    document.getElementById("sendOld").onclick = () => sendDirector(["human", "old"]);
+    document.getElementById("sendNew").onclick = () => sendDirector(["human", "new"]);
+    document.getElementById("sendHost").onclick = () => sendDirector(["human", "old", "new"], "host");
+    document.getElementById("runOld").onclick = () => runModel("old");
+    document.getElementById("runNew").onclick = () => runModel("new");
+    document.getElementById("forwardOld").onclick = () => forward("old");
+    document.getElementById("forwardNew").onclick = () => forward("new");
+    document.getElementById("forwardBoth").onclick = () => forward("both");
+    document.getElementById("saveScript").onclick = saveScript;
+    document.getElementById("createReplay").onclick = createReplay;
+    document.getElementById("replayNext").onclick = replayNext;
+    document.getElementById("replayAll").onclick = replayAll;
+
+    init().catch(error => {
+      console.error(error);
+      setStatus(`连接失败：${error.message}`);
+    });
+  </script>
+</body>
+</html>

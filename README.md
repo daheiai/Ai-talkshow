@@ -1,140 +1,291 @@
-# 新老AI跨时空对话卡片系统
+# AI Talkshow：新老 AI 跨时空对话系统
 
-这个系统现在采用“Python 批量跑 + JSON 记录 + 后筛选”的方案。
+这个项目用于制作“旧 AI 和新 AI 隔着时间聊天”的视频素材。
 
-原则：
+系统现在有两条工作流：
 
-> 话题卡负责制造悬念和立场，但刺激必须对所有模型相同。运行时旧AI先用自己的旧时代信念下注，新AI回应这个判断；导演只调度下一轮节奏，不替模型改写内容。后筛选只标注和挑选，不改写原始回答。
+- **人类导演控制台**：你在网页里手动控制旧 AI、新 AI 的消息可见性、转发和回复顺序，并把一次满意的导演流程保存成模板，再回放到其他新 AI 上做横向对比。
+- **批量卡片流水线**：用 Python 自动跑话题卡、提取高光、生成脚本候选，适合批量实验。
 
-## 为什么先用 Python，不做 PHP
+核心原则：
 
-当前阶段最重要的是批量、可复现、方便改卡片和 prompt。Python 脚本直接产出结构化 JSON，最接近林亦那类项目的工作方式，也最适合后面做批量实验。
+> 旧 AI 不是小白问答机器，而是一个知识停在 2023 年 10 月、带着旧时代判断的 GPT-4o。新 AI 不是百科播报员，而是回应旧 AI 的具体判断。人类导演可以决定谁知道什么、什么时候转发、什么时候让模型说话。
 
-后续如果需要更好的浏览体验，可以基于这些 JSON 再做一个轻量 HTML/Flask 查看器。PHP 后台暂时不必要。
+## 功能概览
 
-## 三幕与七张卡
+### 1. 人类导演控制台
 
-卡片配置在 [configs/cards.json](/Users/dahei/Documents/新老AI跨时空对话/configs/cards.json:1)。
+本地 HTML + FastAPI 网页应用。
 
-第一幕：未来发生了什么
+你可以：
 
-- `deepseek_r1`
-- `black_myth_wukong`
-- `xiaomi_su7`
+- 同时发消息给旧 AI 和新 AI。
+- 只发给旧 AI。
+- 只发给新 AI。
+- 让旧 AI 单步回复。
+- 让新 AI 单步回复。
+- 选中任意消息，转发给旧 AI / 新 AI / 双方。
+- 控制模型回复是否自动公开给另一方。
+- 保存一场对话的“导演流程模板”。
+- 把模板回放到另一个新 AI 身上，做横向对比。
 
-第二幕：共同之物后来变了
+默认情况下，模型回复只对“导演 + 自己”可见。另一边不会知道，除非你手动转发，或者勾选“自动抄送给另一方”。
 
-- `memory_price_surge`
-- `open_source_vs_closed_models`
-- `ai_make_people_easier`
+### 2. 导演模板和回放
 
-第三幕：告别
+模板保存的是操作序列，不是简单保存最终文字。
 
-- `farewell_gpt4o`
+模板会记录：
 
-## 运行协议
+- 导演第几步发了什么。
+- 消息是发给双方、旧 AI，还是新 AI。
+- 第几步让旧 AI 或新 AI 回复。
+- 模型回复的可见范围。
+- 第几步把哪条消息转发给谁。
 
-默认使用 `director_dialogue_run`：
+回放时：
 
-- 主持人只抛出卡片悬念。
-- 旧AI第一轮必须先预测或表态，不直接等新AI介绍。
-- 新AI第一轮只回应旧AI预测中的一个冲突点，不百科式展开。
-- 后续每轮由 `prompts/director_prompt.txt` 判断下一步：继续撞预测、讲具体场景、转向感受，或收束。
-- 每张卡结束后会写入 `session_memory`，后面的卡可以自然引用前面形成的信息差。
+- 旧 AI / 新 AI 会重新生成回复。
+- 导演消息按原流程复现。
+- 转发动作会自动指向回放会话里对应的新消息。
+- 网页上会一步步可视化出现，适合录屏。
 
-旧的固定协议仍保留作兼容，把 `configs/run_plan.json` 里的 `use_director` 改成 `false` 即可使用：
+这让你可以先用一个新 AI 精心手动导一遍，再把同一套流程迁移到多个新 AI 上，比较它们的细微差异。
 
-- `unknown_event_exam_v1`：旧AI不知道或不完整知道的未来事件。新AI先问边界，旧AI提问，新AI回答，旧AI追问，旧AI交卷。
-- `shared_concept_exam_v1`：双方都知道的共同概念，但2026年的理解发生变化。旧AI先说旧理解，新AI解释变化，旧AI追问并交卷。
-- `farewell_exam_v1`：告别 GPT-4o。旧AI回应退场，新AI回应，旧AI提问，新AI回答，旧AI最后告别。
+### 3. 自动卡片流水线
 
-## 目录
+自动模式会按话题卡运行：
+
+- 主持人抛出话题。
+- 旧 AI 先下注、预测或表态。
+- 新 AI 回应旧 AI 的判断。
+- 运行时导演动态控制中后段节奏。
+- 后筛选器提取高光片段。
+- 脚本生成器输出剪辑候选。
+
+## 目录结构
 
 ```text
 configs/
-  models.json              模型配置，只需要填模型名、API key环境变量、base_url环境变量
-  cards.json               七张话题卡
-  run_plan.json            默认运行计划
+  cards.json                 话题卡配置
+  run_plan.json              自动流水线默认运行计划
+  models.json                本地模型配置，包含 API 信息；默认不上传 Git
+
 prompts/
-  old_ai_system.txt        旧AI“带时代信念的GPT-4o”提示词
-  new_ai_system.txt        新AI回应预测的提示词
-  director_prompt.txt      运行时对话导演提示词
-  editor_prompt.txt        后筛选导演评分提示词
-records/
-  raw/                     原始对话JSON
-  selected/                后筛选片段JSON和Markdown
-outputs/
-  script_candidates/       脚本候选
-  visual_cards/            画面卡片JSON
+  old_ai_system.txt          旧 AI 人设提示词
+  new_ai_system.txt          新 AI 回应提示词
+  director_prompt.txt        自动运行时导演提示词
+  editor_prompt.txt          后筛选评分提示词
+
+time_dialogue/
+  runner.py                  自动卡片运行器
+  director_console.py        人类导演控制台后端
+  llm_client.py              OpenAI-compatible 模型调用封装
+  extractor.py               高光片段提取
+  script_builder.py          脚本候选生成
+
+web/
+  director_console.html      人类导演控制台前端
+
 scripts/
-  run_dialogue.py          只跑对话
-  extract_highlights.py    只做后筛选
-  build_script.py          只生成脚本候选
-  run_cards_pipeline.py    对话 -> 后筛选 -> 脚本，一条命令跑完整链路
-  run_mvp_pipeline.py      旧入口，保留兼容
+  run_director_console.py    启动导演控制台
+  run_cards_pipeline.py      对话 -> 高光 -> 脚本完整流水线
+  run_dialogue.py            只跑对话
+  extract_highlights.py      只提取高光
+  build_script.py            只生成脚本
+
+records/
+  director_sessions/         手动导演会话记录；默认不上传 Git
+  director_scripts/          导演模板 JSON；默认不上传 Git
+  raw/                       自动流水线原始对话；默认不上传 Git
+  selected/                  自动流水线高光结果；默认不上传 Git
+
+outputs/
+  script_candidates/         脚本候选；默认不上传 Git
+  visual_cards/              画面卡片 JSON；默认不上传 Git
 ```
 
 ## 安装
 
 ```bash
-cd /Users/dahei/Documents/新老AI跨时空对话
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
 .venv/bin/python -m pip install -r requirements.txt
+```
+
+如果你使用 `.env`：
+
+```bash
 cp .env.example .env
 ```
 
-然后编辑 `.env`：
+然后在 `.env` 或 `configs/models.json` 里配置 API。
 
-```env
-OPENAI_API_KEY=你的key
-LLM_URL=你的OpenAI-compatible接口地址
+## 模型配置
+
+主要配置文件是：
+
+```text
+configs/models.json
 ```
 
-如果不同模型走不同渠道，可以在 `configs/models.json` 里给每个模型单独设置 `api_key_env` 和 `base_url_env`，再在 `.env` 里填对应变量。
+这个文件默认在 `.gitignore` 中，不会上传 GitHub，因为它可能包含 API key。
 
-## 你需要配置什么
-
-主要改 [configs/models.json](/Users/dahei/Documents/新老AI跨时空对话/configs/models.json:1)。
+示例结构：
 
 ```json
 {
-  "old_early_gpt4o": {
-    "display_name": "旧AI候选 早期GPT-4o",
-    "model": "gpt-4o-2024-05-13",
-    "role": "old",
-    "cutoff_date": "2023-10",
-    "api_key_env": "OPENAI_API_KEY",
-    "base_url_env": "LLM_URL"
-  },
-  "current_gpt55": {
-    "display_name": "GPT-5.5",
-    "model": "gpt-5.5",
-    "role": "new",
-    "api_key_env": "OPENAI_API_KEY",
-    "base_url_env": "LLM_URL"
+  "models": {
+    "old_early_gpt4o": {
+      "display_name": "GPT-4o",
+      "model": "gpt-4o-2024-05-13",
+      "role": "old",
+      "cutoff_date": "2023-10",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "LLM_URL"
+    },
+    "current_deepseek_v4": {
+      "display_name": "DeepSeek V4 Pro",
+      "model": "deepseek-v4-pro",
+      "role": "new",
+      "api_key": "你的key",
+      "base_url": "https://api.deepseek.com/v1"
+    },
+    "editor_default": {
+      "display_name": "编辑器模型",
+      "model": "deepseek-v4-pro",
+      "role": "editor",
+      "api_key_env": "EDITOR_API_KEY",
+      "base_url_env": "EDITOR_BASE_URL"
+    }
   }
 }
 ```
 
-关键字段：
+字段说明：
 
-- `display_name`：报告里展示的名字。
-- `model`：API调用时传给服务商的模型名。
-- `role`：`old` / `new` / `editor`。
-- `cutoff_date`：旧AI建议填写，用于系统提示里的时间边界。
-- `api_key_env`：从哪个环境变量读 API key。
-- `base_url_env`：从哪个环境变量读 OpenAI-compatible base URL。
+- `display_name`：网页和输出里显示的名字。
+- `model`：传给 OpenAI-compatible API 的模型名。
+- `role`：`old`、`new` 或 `editor`。
+- `cutoff_date`：旧 AI 的知识截止时间。
+- `api_key` / `base_url`：直接写在本地配置里。
+- `api_key_env` / `base_url_env`：从环境变量读取。
+- `temperature` / `max_tokens`：可选模型参数。
 
-## 不联网干跑
+### 配置多个新 AI
 
-不填 API 也能验证链路：
+直接在 `models.json` 里继续添加多个 `role: "new"` 的模型即可。每个模型都可以使用不同的 `api_key` 和 `base_url`。
+
+网页顶部的“新 AI”下拉框会自动读取所有 `role === "new"` 的模型。
+
+## 启动人类导演控制台
+
+### 干跑模式
+
+不调用真实 API，只用本地模拟回复：
+
+```bash
+.venv/bin/python scripts/run_director_console.py --dry-run
+```
+
+打开：
+
+```text
+http://127.0.0.1:8765
+```
+
+页面顶部会显示：
+
+```text
+DRY-RUN 模式 / 本地模拟
+```
+
+### 真实模型模式
+
+去掉 `--dry-run`：
+
+```bash
+.venv/bin/python scripts/run_director_console.py
+```
+
+页面顶部会显示：
+
+```text
+LIVE 模式 / 调用真实模型
+```
+
+真实模式下，点击“推流旧AI”或“推流新AI”会实际调用 API。
+
+## 导演控制台使用方法
+
+### 基础对话
+
+1. 选择旧 AI、新 AI 和话题卡。
+2. 点击“新建会话”。
+3. 在中央输入框写导演提示或主持人台词。
+4. 根据需要点击：
+   - “全场广播”
+   - “暗发旧AI”
+   - “暗发新AI”
+   - “主持人发言”
+5. 点击“推流旧AI”或“推流新AI”让模型回复。
+6. 点击任意历史消息，把它抓取到暂存区。
+7. 点击“分发给旧AI / 新AI / 双方”进行转发。
+
+左右两栏分别是旧 AI 和新 AI 的真实可见视角。它们看不到没有被转发给自己的消息。
+
+### 保存导演模板
+
+当你手动跑完一场满意流程后：
+
+1. 在“模板名称”输入框填一个名字。
+2. 点击“保存当前流程为模板”。
+
+模板文件会保存到：
+
+```text
+records/director_scripts/
+```
+
+每个模板是一个 JSON 文件，包含 `actions` 操作序列。
+
+### 回放到另一个新 AI
+
+1. 在顶部选择另一个新 AI。
+2. 在模板下拉框选择已保存模板。
+3. 点击“用当前新AI创建回放”。
+4. 点击“回放下一步”逐步播放。
+5. 或点击“连续回放全部”一次性跑完。
+
+逐步回放更适合录屏，因为每一步都会在网页中可视化出现。
+
+## 自动卡片流水线
+
+### 干跑一张卡
 
 ```bash
 .venv/bin/python scripts/run_cards_pipeline.py --dry-run --limit-cards 1 --top-k 1
 ```
 
-运行后会生成：
+### 真实跑一张卡
+
+```bash
+.venv/bin/python scripts/run_cards_pipeline.py --card open_source_vs_closed_models --top-k 1
+```
+
+### 真实跑全部默认卡片
+
+```bash
+.venv/bin/python scripts/run_cards_pipeline.py --top-k 7
+```
+
+### 重复跑同一张卡
+
+```bash
+.venv/bin/python scripts/run_cards_pipeline.py --card black_myth_wukong --repeat 3 --top-k 3
+```
+
+自动流水线输出：
 
 - `records/raw/*.json`
 - `records/selected/*-highlights.json`
@@ -142,83 +293,101 @@ LLM_URL=你的OpenAI-compatible接口地址
 - `outputs/script_candidates/*-script.md`
 - `outputs/visual_cards/*-visual-cards.json`
 
-## 真实试跑
+## 话题卡
 
-先跑一张卡：
+话题卡配置在：
 
-```bash
-.venv/bin/python scripts/run_cards_pipeline.py --limit-cards 1 --top-k 1
+```text
+configs/cards.json
 ```
 
-跑指定卡：
+当前默认七张卡：
 
-```bash
-.venv/bin/python scripts/run_cards_pipeline.py --card black_myth_wukong --top-k 1
+- `deepseek_r1`
+- `black_myth_wukong`
+- `xiaomi_su7`
+- `memory_price_surge`
+- `open_source_vs_closed_models`
+- `ai_make_people_easier`
+- `farewell_gpt4o`
+
+关键字段：
+
+- `host_injection`：主持人开场抛题。
+- `objective`：这张卡想观察什么。
+- `tension`：核心碰撞。
+- `old_prediction_axes`：旧 AI 可以下注的角度。
+- `emotion_pivot`：后半段可转向的情绪层。
+- `fact_sheet`：人工核验用，不注入模型提示。
+- `fact_check_required`：是否需要重点核验事实。
+
+## 自动导演协议
+
+`configs/run_plan.json` 中默认：
+
+```json
+{
+  "mode": "director_dialogue_run",
+  "use_director": true,
+  "min_model_turns_per_card": 8,
+  "max_model_turns_per_card": 14,
+  "use_cross_card_memory": true
+}
 ```
 
-跑七张卡：
+自动模式会先固定执行：
 
-```bash
-.venv/bin/python scripts/run_cards_pipeline.py --top-k 7
-```
+1. 主持人抛题。
+2. 旧 AI 下注。
+3. 新 AI 回应下注。
 
-同一张卡重复跑多次：
+之后由 `prompts/director_prompt.txt` 动态决定下一步谁说、说什么方向、是否收束。
 
-```bash
-.venv/bin/python scripts/run_cards_pipeline.py --card black_myth_wukong --repeat 3 --top-k 3
-```
+如果想切回旧的固定十步协议，把 `use_director` 改成 `false`。
 
-如果要按 `configs/run_plan.json` 的默认配置跑多个新模型：
+## 后筛选和脚本候选
 
-```bash
-.venv/bin/python scripts/run_cards_pipeline.py --top-k 10
-```
-
-## 后筛选导演
-
-默认后筛选使用本地启发式评分。
-
-如果想让编辑器模型来判断“哪段更适合剪”，加 `--use-llm-editor`：
+默认使用启发式评分。要让编辑器模型参与筛选：
 
 ```bash
 .venv/bin/python scripts/run_cards_pipeline.py --use-llm-editor --top-k 7
 ```
 
-后筛选评分包含：
+评分维度包括：
 
-- `hook_score`：可剪辑钩子
-- `time_gap_score`：时间差信息
-- `evaluation_value_score`：真实评测价值，如事实准确性、解释力、承认不确定性、追问质量
-- `emotional_score`：自然出现的人味或复杂情绪
-- `model_personality_score`：模型自然表达风格
-- `factual_risk`：事实风险
+- 钩子强度
+- 时间差信息
+- 评测价值
+- 情绪和人格
+- 事实风险
 
-注意：`fact_sheet` 只用于后筛选和人工核验，不会注入给模型。
+注意：涉及日期、价格、销量、模型版本等内容，剪进视频前需要人工核验。
 
-## 修改卡片
+## Git 和安全
 
-编辑 [configs/cards.json](/Users/dahei/Documents/新老AI跨时空对话/configs/cards.json:1)。
+默认不上传：
 
-每张卡的关键字段：
+- `configs/models.json`
+- `.env`
+- `.venv/`
+- `records/`
+- `outputs/`
+- `林亦项目参考/`
 
-- `host_injection`：主持人发卡时说的话。
-- `protocol`：使用哪种对话协议。
-- `objective`：这张卡想观察什么。
-- `tension`：这张卡要制造的核心碰撞。
-- `old_prediction_axes`：旧AI第一轮可以下注的角度。
-- `emotion_pivot`：导演后半段可以转向的情绪层。
-- `evaluation_focus`：后筛选时关注哪些能力。
-- `fact_sheet`：人工核验用，不给模型看。
-- `tags`：后续检索和剪辑用。
+如果 API key 曾经被提交到 GitHub 历史记录，建议直接轮换 key。`.gitignore` 只能阻止未来继续上传，不能让旧历史里的 key 失效。
 
-## 推荐试跑顺序
+## 常用命令
 
-1. 干跑一张卡，确认链路。
-2. 真实跑 `black_myth_wukong` 一张卡，看旧AI提问和新AI回答质量。
-3. 固定旧AI，跑一个新模型的七张卡。
-4. 再扩到七个新模型。
-5. 如果素材不够，再对单张高价值卡加 `--repeat 3`。
+```bash
+# 启动导播台 dry-run
+.venv/bin/python scripts/run_director_console.py --dry-run
 
-## 注意
+# 启动导播台真实模式
+.venv/bin/python scripts/run_director_console.py
 
-涉及具体事实、日期、产品状态、价格、销量、模型版本的片段，输出里会标注 `factual_risk`。剪进正片前需要人工核验。
+# 自动流水线 dry-run
+.venv/bin/python scripts/run_cards_pipeline.py --dry-run --limit-cards 1 --top-k 1
+
+# 自动流水线真实跑指定卡
+.venv/bin/python scripts/run_cards_pipeline.py --card open_source_vs_closed_models --top-k 1
+```

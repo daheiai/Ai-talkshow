@@ -10,5 +10,7 @@ configs/models.json
 records/raw/*.json
 records/selected/*.json
 records/selected/*.md
+records/director_sessions/*.json
+records/director_scripts/*.json
 outputs/script_candidates/*.md
 outputs/visual_cards/*.json
